@@ -21,29 +21,6 @@ DataProcessing.CategorySpecificSpreadsheetPopulator = (function () {
     return sheetDataRange;
   };
 
-  // TODO: refactor this, possibly just remove it
-  var _setFormulasForData = function (sheet, dataToExport) {
-    var formulaBaseRowIndex = sheet.getLastRow() + 1;
-    var followUpTypeIndex = 20;
-    var lcStudyLeaderIndex = 25;
-    var regionIndex = 26;
-    var ministryAreaIndex = 27;
-
-    dataToExport.forEach(function (row, index) {
-      var formulaRowIndex = formulaBaseRowIndex + index;
-
-      row[followUpTypeIndex] = '= if(Q' + formulaRowIndex + '="yes", "Bridge, ", "") & '
-        + 'if(R' + formulaRowIndex + '="yes", "BS, ", "") & if(S' +
-        formulaRowIndex + '="yes", "E-List, ", "")';
-      row[lcStudyLeaderIndex] =
-        '=iferror(VLOOKUP(V' + formulaRowIndex + ', LeadershipCommunity!A2:F, 4), "")';
-      row[regionIndex] =
-        '=iferror(VLOOKUP(V' + formulaRowIndex + ', LeadershipCommunity!A2:F, 5), "")';
-      row[ministryAreaIndex] =
-        '=iferror(VLOOKUP(V' + formulaRowIndex + ', LeadershipCommunity!A2:F, 6), "")';
-    });
-  };
-
   /**
    * Takes the processed master sheet and populates the data into all of the category specific
    * sheets.
@@ -62,18 +39,10 @@ DataProcessing.CategorySpecificSpreadsheetPopulator = (function () {
       }
 
       var sheet = categorySpecificSheet.spreadsheet.getSheets()[0];
-      _setFormulasForData(sheet, categorySpecificSheet.dataToExport);
       var sheetDataRange =
         _getDataRangeFromCategorySpecificSheet(sheet, categorySpecificSheet.dataToExport);
 
       sheetDataRange.setValues(categorySpecificSheet.dataToExport);
-
-      var assignmentIdentifierRange = categorySpecificSheet.spreadsheet.getRange(
-        'LeadershipCommunity!A2:A');
-      var assignmentIdentifiersRule = SpreadsheetApp.newDataValidation()
-                                                    .requireValueInRange(assignmentIdentifierRange)
-                                                    .build();
-      sheet.getRange('V2:V').setDataValidation(assignmentIdentifiersRule);
     });
   };
 
