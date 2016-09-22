@@ -35,6 +35,13 @@ var GlobalConfig = {
    * {String}
    */
   aggregateSheetName: 'Aggregate',
+
+  /**
+   * All of the admins that will be added the ability to edit protected cells.
+   *
+   * {String[]}
+   */
+  admins: ['dustin.singleton@cerner.com', 'heemstrs@gmail.com', 'john.w.payton@gmail.com'],
 };
 
 //noinspection JSUnusedGlobalSymbols
@@ -68,7 +75,8 @@ function exportResults() {
   Main.SubmissionHandler.reExportResults();
 }
 
-function copySheetToCategorySpecificSheets(sheetName, shouldHideSheet) {
+function copyCampusInfoToCampusSheets(date) {
+  var sheetName = 'Campus Info';
   var originalSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   var masterSheet = spreadsheet.getSheetByName(GlobalConfig.masterSheetName);
@@ -81,18 +89,14 @@ function copySheetToCategorySpecificSheets(sheetName, shouldHideSheet) {
     }
 
     var copiedSheet = originalSheet.copyTo(element.spreadsheet).setName(sheetName);
-
-    if (shouldHideSheet) {
-      copiedSheet.hideSheet();
-    } else {
-      copiedSheet.showSheet();
+    copiedSheet.getRange(1, 2).setValue(element.campusLocationName);
+    copiedSheet.getRange(1, 1, 2, 2).protect().addEditors(GlobalConfig.admins);
+    copiedSheet.getParent().addEditors(GlobalConfig.admins);
+    if (date) {
+      copiedSheet.getRange(2, 2).setValue(date);
     }
   });
-}
-
-function copyReportToSubsheets() {
-  copySheetToCategorySpecificSheets('Report', false);
-}
+};
 
 var Main = Main || {};
 
@@ -111,6 +115,10 @@ Main.SubmissionHandler = (function () {
     DataProcessing.CategorySpecificSpreadsheetPopulator.populateCategorySpecificSpreadsheets(
       processedMasterSheet);
     DataProcessing.ExportedColumnPopulator.populateExportedColumn(processedMasterSheet);
+
+    var date = new Date();
+    currentSpreadSheet.getSheetByName('Campus Info').getRange(2, 2).setValue(date);
+    copyCampusInfoToCampusSheets(date);
   };
 
   return {
@@ -131,15 +139,9 @@ Main.UIHandler = (function () {
     spreadsheet.removeMenu(menuText);
     var menus = [];
 
-    if (spreadsheet.getSheetByName('Aggregate') == null) {
-      menus.push({ name: 'Create Aggregate Sheet', functionName: 'generateAggregateSheet' });
-    } else {
-      menus.push({ name: 'Update Aggregate Sheet', functionName: 'generateAggregateSheet' });
-    }
-
+    menus.push({ name: 'Update Aggregate Sheet', functionName: 'generateAggregateSheet' });
     menus.push(null);
-    menus.push({ name: 'Copy Report To Category Sheets', functionName: 'copyReportToSubsheets' });
-
+    menus.push({ name: 'Copy Campus Info To Campus Sheets', functionName: 'copyCampusInfoToCampusSheets' });
     menus.push(null);
     menus.push({ name: 'Re-Export Results', functionName: 'exportResults' });
 
@@ -179,15 +181,21 @@ Main.UIHandler = (function () {
     }
 
     aggregateSheet.setFrozenRows(1);
-    aggregateSheet.setFrozenColumns(4);
+    aggregateSheet.setFrozenColumns(10);
 
-    aggregateSheet.hideColumns(17, 3);
-    aggregateSheet.hideColumns(26, 4);
+    aggregateSheet.hideColumns(6, 3);
+    aggregateSheet.hideColumns(13, 1);
+    aggregateSheet.hideColumns(16, 1);
+    aggregateSheet.hideColumns(19, 1);
+    aggregateSheet.hideColumns(21, 1);
+    aggregateSheet.hideColumns(24, 1);
+    aggregateSheet.hideColumns(26, 36);
 
-    aggregateSheet.getRange('V:V').setBackground('#c9daf8');
-    aggregateSheet.getRange('W:Y').setBackground('#f9cb9c');
-    aggregateSheet.getRange('Z:AB').setBackground('#d0e0e3');
+    aggregateSheet.getRange('A2:C').setBackground('#ffe599');
+    aggregateSheet.getRange('I2:J').setBackground('#d9d9d9');
+    aggregateSheet.getRange(1, 1, 1, aggregateSheet.getLastColumn()).setBackground('#d9d9d9');
 
+    SheetUtility.boldHeaders(aggregateSheet);
     SheetUtility.resizeAllColumns(aggregateSheet);
 
     return;

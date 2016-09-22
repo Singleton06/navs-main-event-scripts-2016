@@ -85,19 +85,28 @@ Utility.CategorySpecificSpreadsheetUtility = (function () {
     parentFolder.addFile(DriveApp.getFileById(newSpreadsheet.getId()));
     newSpreadsheet.appendRow(headers);
 
-    // TODO: update the formatting
-    dataSheet.hideColumns(17, 3);
-    dataSheet.hideColumns(26, 4);
+    dataSheet.hideColumns(6, 3);
+    dataSheet.hideColumns(13, 1);
+    dataSheet.hideColumns(16, 4);
+    dataSheet.hideColumns(19, 1);
+    dataSheet.hideColumns(21, 1);
+    dataSheet.hideColumns(24, 1);
+    dataSheet.hideColumns(26, 36);
 
-    dataSheet.getRange('V:V').setBackground('#c9daf8');
-    dataSheet.getRange('W:Y').setBackground('#f9cb9c');
-    dataSheet.getRange('Z:AB').setBackground('#d0e0e3');
+    // hide UUID column
+    dataSheet.hideColumns(65, 1);
 
-    dataSheet.setFrozenColumns(3);
+    dataSheet.getParent().addEditors(GlobalConfig.admins);
+    dataSheet.getRange('F:H').protect().addEditors(GlobalConfig.admins);
+    dataSheet.getRange('K:BM').protect().addEditors(GlobalConfig.admins);
+    dataSheet.getRange('A2:C').setBackground('#ffe599');
+    dataSheet.getRange(1, 1, 1, dataSheet.getLastColumn()).setBackground('#d9d9d9');
+
+    // Freeze all the way to column 10 because we hide 3 of the first column
+    dataSheet.setFrozenColumns(10);
     dataSheet.setFrozenRows(1);
 
-    var fontWeights = _getColumnHeaderWeights(headers);
-    dataSheet.getRange(1, 1, 1, dataSheet.getLastColumn()).setFontWeights([fontWeights]);
+    SheetUtility.boldHeaders(dataSheet);
 
     return newSpreadsheet;
   };

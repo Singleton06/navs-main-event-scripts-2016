@@ -158,4 +158,21 @@ var SheetUtility = {
     }
   },
 
+  /**
+   * Bolds the text in the first row of the specified sheet.
+   *
+   * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet
+   *    The sheet to bold the headers on.
+   */
+  boldHeaders: function (sheet) {
+    var headers = this.getColumnTitlesAsArray(sheet);
+
+    var columnHeaderWeights = [];
+    for (var i = 0; i < headers.length; i++) {
+      columnHeaderWeights.push('bold');
+    }
+
+    sheet.getRange(1, 1, 1, sheet.getLastColumn()).setFontWeights([columnHeaderWeights]);
+  }
+
 };
