@@ -3,7 +3,7 @@ var GlobalConfig = {
    * The suffix that will be appended to the end of the scripts that get created
    * when the data is being sectioned out into separate spreadsheets.
    */
-  categorySpecificSpreadsheetSuffix: '-Survey-Data',
+  categorySpecificSpreadsheetSuffix: '-ME-2016-Registrations',
 
   /**
    * The spreadsheet that contains the survey responses that will ultimately
@@ -68,7 +68,7 @@ function spreadsheetOpened(e) {
 }
 
 function generateAggregateSheet() {
-  Main.UIHandler.generateAggregateSheet(SpreadsheetApp.getActiveSpreadsheet());
+  Main.UIHandler.generateAggregateSheet(SpreadsheetApp.openById(GlobalConfig.spreadsheetIdToAttachTo));
 }
 
 function exportResults() {
@@ -77,8 +77,8 @@ function exportResults() {
 
 function copyCampusInfoToCampusSheets(date) {
   var sheetName = 'Campus Info';
-  var originalSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-  var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  var originalSheet = SpreadsheetApp.openById(GlobalConfig.spreadsheetIdToAttachTo).getSheetByName(sheetName);
+  var spreadsheet = SpreadsheetApp.openById(GlobalConfig.spreadsheetIdToAttachTo);
   var masterSheet = spreadsheet.getSheetByName(GlobalConfig.masterSheetName);
   var allAvailableCategories = Model.CategoryFactory.createAllCategories();
   Model.CategoryFactory.associateSpreadsheetsToAllCategories(allAvailableCategories, masterSheet);
@@ -191,7 +191,7 @@ Main.UIHandler = (function () {
     aggregateSheet.hideColumns(24, 1);
     aggregateSheet.hideColumns(26, 36);
 
-    aggregateSheet.getRange('A2:C').setBackground('#ffe599');
+    aggregateSheet.getRange('A2:D').setBackground('#ffe599');
     aggregateSheet.getRange('I2:J').setBackground('#d9d9d9');
     aggregateSheet.getRange(1, 1, 1, aggregateSheet.getLastColumn()).setBackground('#d9d9d9');
 

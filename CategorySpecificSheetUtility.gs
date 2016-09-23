@@ -97,9 +97,10 @@ Utility.CategorySpecificSpreadsheetUtility = (function () {
     dataSheet.hideColumns(65, 1);
 
     dataSheet.getParent().addEditors(GlobalConfig.admins);
-    dataSheet.getRange('F:H').protect().addEditors(GlobalConfig.admins);
+    dataSheet.getRange('I:J').protect().addEditors(GlobalConfig.admins);
     dataSheet.getRange('K:BM').protect().addEditors(GlobalConfig.admins);
-    dataSheet.getRange('A2:C').setBackground('#ffe599');
+    dataSheet.getRange('A2:D').setBackground('#ffe599');
+    dataSheet.getRange('I2:J').setBackground('#ffe599');
     dataSheet.getRange(1, 1, 1, dataSheet.getLastColumn()).setBackground('#d9d9d9');
 
     // Freeze all the way to column 10 because we hide 3 of the first column
